@@ -1,0 +1,18 @@
+VENV
+venv
+*.pyc
+__pycache__
+*.sqlite3
+*.pyo
+*.pyc
+*.pyo
+.env
+.env.db
+
+.idea/
+.vscode/
+# Ignore any compiled Python files or directories
+__pycache__/
+static/
+media/
+*.log

@@ -33,6 +33,7 @@ DEBUG = True if os.environ.get('DEBUG') in (1, '1') else False
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(' ')
 
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -42,7 +43,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # ###########################
+    'user',
 ]
+
+
+#change the User Model
+AUTH_USER_MODEL = 'user.AdminUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -77,9 +84,6 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-print('@'*30)
-print(os.environ.get('USE_POSTGRES_ENGIN', True), type(os.environ.get('USE_POSTGRES_ENGIN', True)))
-print('@'*30)
 if os.environ.get('USE_POSTGRES_ENGIN', False) in (1, '1'):
     DATABASES = {
         "default": {
@@ -96,7 +100,6 @@ if os.environ.get('USE_POSTGRES_ENGIN', False) in (1, '1'):
         },
     }
 else:
-    print('!'*30)
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',

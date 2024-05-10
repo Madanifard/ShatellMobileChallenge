@@ -35,3 +35,4 @@ class UserInfoSerializer(serializers.Serializer):
     def validate_national_id(self, value):
         if not is_valid_iran_code(value):
             raise serializers.ValidationError("Invalid National ID")
+        return value

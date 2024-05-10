@@ -7,6 +7,9 @@ from django.contrib.auth import authenticate
 from .serializer import LoginSerializer, RegistrationSerializer, UserInfoSerializer
 from django.http import HttpResponse
 from django.urls import reverse
+from rest_framework.decorators import schema
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from .lib import (read_csv_file, 
                   create_csv_file, 
                   output, 
@@ -17,7 +20,33 @@ from .lib import (read_csv_file,
 
 
 class LoginAPIView(APIView):
+
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['username', 'password'],
+            properties={
+                'username': openapi.Schema(type=openapi.TYPE_STRING),
+                'password': openapi.Schema(type=openapi.TYPE_STRING)
+            }
+        ),
+        responses={
+            200: "Success response",
+            400: "Bad request response",
+            401: "Unauthorized response"
+        }
+    )
     def post(self, request):
+        """
+        Log in a user.
+
+        Authenticate user with provided credentials.
+
+        Returns:
+        - 200: Success response
+        - 400: Bad request response
+        - 401: Unauthorized response
+        """
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             username = serializer.validated_data['username']
@@ -42,7 +71,30 @@ class LoginAPIView(APIView):
 
 
 class RegistrationAPIView(APIView):
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['email', 'password'],
+            properties={
+                'email': openapi.Schema(type=openapi.TYPE_STRING),
+                'password': openapi.Schema(type=openapi.TYPE_STRING)
+            }
+        ),
+        responses={
+            201: "Created response",
+            400: "Bad request response"
+        }
+    )
     def post(self, request):
+        """
+        Register a new user.
+
+        Create a new user with Email and Password.
+
+        Returns:
+        - 201: Created response
+        - 400: Bad request response
+        """
         serializer = RegistrationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -57,7 +109,40 @@ class RegistrationAPIView(APIView):
 class CSVUploadView(APIView):
     permission_classes = [IsAuthenticated]
     
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['file_base64'],
+            properties={
+                'file_base64': openapi.Schema(type=openapi.TYPE_STRING)
+            }
+        ),
+        responses={
+            200: "Success response",
+            400: "Bad request response",
+            500: "Internal server error response"
+        },
+        manual_parameters=[
+            openapi.Parameter(
+                name='Authorization',
+                in_=openapi.IN_HEADER,
+                type=openapi.TYPE_STRING,
+                required=True,
+                description='Bearer token for authentication'
+            ),
+        ]
+    )
     def post(self, request):
+        """
+        Upload a CSV file.
+
+        Read and process the CSV file data. NOT: csv_file is Base 64 string
+
+        Returns:
+        - 200: Success response
+        - 400: Bad request response
+        - 500: Internal server error response
+        """
         file_obj = request.data['file_base64']
         result_read, content_file = read_csv_file(file_obj)
         if not result_read:
@@ -121,11 +206,28 @@ class CSVUploadView(APIView):
 class ListUserInfo(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        responses={
+            200: "Success response"
+        },
+        manual_parameters=[
+            openapi.Parameter(
+                name='Authorization',
+                in_=openapi.IN_HEADER,
+                type=openapi.TYPE_STRING,
+                required=True,
+                description='Bearer token for authentication'
+            ),
+        ]
+    )
     def get(self, request):
+        """
+        Retrieve a list of user info.
+
+        Returns:
+        - 200: Success response
+        """
         user_info_list = list_user_info()
-        print('@'*40)
-        print(user_info_list)
-        print('@'*40)
         serializer = UserInfoSerializer(data=user_info_list, many=True)
         serializer.is_valid()
         return Response(output(message="list of User Info", 
@@ -133,6 +235,12 @@ class ListUserInfo(APIView):
                                status=status.HTTP_200_OK)
 
 def download_csv(request, name_file):
+    """
+    Download a CSV file.
+
+    Returns:
+    - HTTP Response: Downloaded CSV file
+    """
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f'attachment; filename="{name_file}"'
     # Write the CSV file content to the response

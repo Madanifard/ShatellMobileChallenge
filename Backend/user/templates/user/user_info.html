@@ -1,0 +1,134 @@
+{% extends "lte_layout.html" %}
+{% load static %}
+
+
+{% block content %}
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+        <div class="col-sm-6">
+            <h1 class="m-0">USER INFO LIST</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{% url 'panel_user_info' %}" id="active_link" >User Info</a></li>
+            <li class="breadcrumb-item active">List</li>
+            </ol>
+        </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
+<section class="content">
+    <div class="container-fluid">
+        <!-- Info boxes -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-outline card-primary">
+                    <div class="card-header">
+                        list User
+                    </div>
+                    <div class="card-body">
+                        <table id="userInfo" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>row</th>
+                                    <th>email</th>
+                                    <th>national_id</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}
+
+{% block css %}
+<link rel="stylesheet" href='{% static "lte_panel/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css" %}' >
+<link rel="stylesheet" href='{% static "lte_panel/plugins/datatables-responsive/css/responsive.bootstrap4.min.css" %}' >
+
+{% endblock css %}
+
+{% block scripts %}
+<script src='{% static "lte_panel/plugins/datatables/jquery.dataTables.min.js" %}'></script>
+<script src='{% static "lte_panel/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js" %}'></script>
+<script src='{% static "lte_panel/plugins/datatables-responsive/js/dataTables.responsive.min.js" %}'></script>
+<script src='{% static "lte_panel/plugins/datatables-responsive/js/responsive.bootstrap4.min.js" %}'></script>
+<script>
+
+var token = localStorage.getItem('jwtToken');
+
+
+$(document).ready(function() {
+
+    var base_url = window.location.origin;
+    var result_check_token = check_token(token)
+
+    if (result_check_token) {
+        
+        
+        $.ajax({
+            type: 'GET',
+            url: base_url + '/api/listUserInfo',
+            headers: {
+                "Authorization": "Bearer " + localStorage.getItem('jwtToken')
+            },
+            success: function (response) {
+                console.log(response);
+                userInfoDataTable(response.data)
+                /*if (data.message=="success") {
+                    toastr.success("Register Scucessfull");
+                    setTimeout(redirect_to_login(), 5000);
+                }*/
+                
+            },
+            error: function(data) {
+                var jsonResponse = JSON.parse(data.responseText);
+                if (Array.isArray(jsonResponse.errors)) {
+                    toastr.error(jsonResponse.errors[0]);
+                } else {
+                    toastr.error('EROR IN SERVER !');
+                }
+            },
+        });
+    }else {
+        redirect_to_login();
+    }
+
+});
+
+function userInfoDataTable(data) {
+    $("#userInfo").DataTable().clear(); // Clear existing data
+    var row = 1;
+    $.each(data, function(index, value) {
+        $('#userInfo').dataTable().fnAddData([
+            row,
+            value.email,
+            value.national_id
+        ]);
+        row++;
+    });
+}
+
+function redirect_to_login() {
+    window.location = '{% url "login" %}'
+}
+
+function check_token(token) {
+    if (token === null) {
+        return false
+    }
+
+    if (typeof token === 'undefined') {
+        return false
+    }
+
+    return true
+}
+
+</script>
+
+{% endblock scripts %}

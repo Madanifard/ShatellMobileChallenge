@@ -1,3 +1,10 @@
-from django.shortcuts import render
+from django.views.generic import TemplateView
 
-# Create your views here.
+class LoginView(TemplateView):
+    template_name = 'user/login.html'
+
+class RegisterView(TemplateView):
+    template_name = 'user/register.html'
+
+class UserInfoView(TemplateView):
+    template_name = 'user/user_info.html'

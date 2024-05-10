@@ -1,0 +1,117 @@
+{% extends "lte_login.html" %}
+
+
+
+{% block content %}
+<div class="hold-transition register-page">
+    <div class="register-box">
+        <div class="card card-outline card-primary">
+            <div class="card-header text-center">
+                <h3>SHATEL MOBILE PANEL</h3>
+            </div>
+            <div class="card-body">
+                <p class="login-box-msg">Register a new membership</p>
+
+                <form id="register_form">
+                    
+                    <div class="input-group mb-3">
+                        <input id="email_register" name="email" type="email" class="form-control" placeholder="Email">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-envelope"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <label id="email_error" for="email_register" style="color:red"></label>
+
+                    <div class="input-group mb-3">
+                        <input id="password_register" name="password" type="password" class="form-control" placeholder="Password">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <label id="password_error" for="password_register" style="color:red"></label>
+
+                    <div class="input-group mb-3">
+                        <input id="re_password_register" type="password" class="form-control" placeholder="Retype password">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <label id="re_password_error" for="re_password_register" style="color:red"></label>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary btn-block">Register</button>
+                        </div>
+                    </div>
+                </form>
+                <a href="{% url 'login' %}" class="text-center">I already have a membership</a>
+            </div>
+            <!-- /.form-box -->
+        </div><!-- /.card -->
+    </div>
+
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+var base_url = window.location.origin;
+
+$('#register_form').submit(function () {
+
+    let password = $('#password_register').val();
+    let re_password = $('#re_password_register').val();
+    console.log(password, re_password);
+    if (password !== re_password) {
+        toastr.error('Password and repeating password are not equal anymore');
+        $('#password_register').addClass('is-invalid');
+        $('#password_error').html('password not match');
+        $('#re_password_register').addClass('is-invalid');
+        $('#re_password_error').html('password not match');
+        return false;
+    }
+    
+    $.ajax({
+        type: 'POST',
+        url: base_url + '/api/register',
+        data: $(this).serialize(),
+        success: function (data) {
+            if (data.message=="success") {
+                toastr.success("Register Scucessfull");
+                setTimeout(redirect_to_login(), 5000);
+            }
+            
+        },
+        error: function(data) {
+            var jsonResponse = JSON.parse(data.responseText);
+            if (Array.isArray(jsonResponse.errors)) {
+                toastr.error(jsonResponse.errors[0]);
+            } else {
+                toastr.error('EROR IN SERVER !');
+                showErrors(jsonResponse.errors)
+            }
+        },
+    });
+    return false;
+});
+
+function showErrors(error_obj) {
+    Object.entries(error_obj).forEach(entry => {
+        const [key, value] = entry;
+        $("#" + key + '_error').html(value[0]);
+        $("#" + key + "_register").addClass('is-invalid');
+    });
+}
+
+function redirect_to_login() {
+    window.location = '{% url "login" %}'
+}
+
+</script>
+{% endblock scripts %}

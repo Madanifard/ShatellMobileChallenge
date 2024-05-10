@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SHATELL MOBILE</title>
+  <link rel="shortcut icon" type="image/png" href="{% static 'lte_panel/img/favicone.png' %}" >
+  <link rel="stylesheet" href='{% static "lte_panel/css/font_sans_pro.css" %}' >
+  <link rel="stylesheet" href='{% static "lte_panel/plugins/fontawesome-free/css/all.min.css" %}' >
+  <link rel="stylesheet" href='{% static "lte_panel/plugins/icheck-bootstrap/icheck-bootstrap.min.css" %}'>  
+  <link rel="stylesheet" href='{% static "lte_panel/css/adminlte.css" %}'>
+  <link rel="stylesheet" href='{% static "lte_panel/plugins/toastr/toastr.min.css" %}'>
+    {% block css %}{% endblock css %}
+</head>
+<body>
+    {% block content %}{% endblock content %}
+<!-- jQuery -->
+<script src='{% static "lte_panel/plugins/jquery/jquery-3.7.1.min.js" %}'></script>
+<script src='{% static "lte_panel/plugins/bootstrap/js/bootstrap.bundle.min.js" %}'></script>
+<script src='{% static "lte_panel/js/adminlte.js" %}'></script>
+<script src='{% static "lte_panel/plugins/toastr/toastr.min.js"%}'></script>
+
+{% block scripts %}{% endblock scripts %}
+
+</body>
+</html>

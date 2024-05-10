@@ -1,0 +1,97 @@
+{% extends "lte_login.html" %}
+
+{% block content %}
+<div class="hold-transition login-page">
+    <div class="login-box">
+        <!-- /.login-logo -->
+        <div class="card card-outline card-primary">
+            <div class="card-header text-center">
+                <h3>SHATEL MOBILE PANEL</h3>
+            </div>
+            <div class="card-body">
+                <p class="login-box-msg">Sign in to start your session</p>
+    
+                <form id="login_form">
+                    <div class="input-group mb-3">
+                    <input id="username_login" name="username" type="email" class="form-control" placeholder="Email">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                        <span class="fas fa-envelope"></span>
+                        </div>
+                    </div>
+                    </div>
+                    <label id="username_error" for="email_login" style="color:red"></label>
+
+                    <div class="input-group mb-3">
+                        <input id="password_login" name="password" type="password" class="form-control" placeholder="Password">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                            <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <label id="password_error" for="password_login" style="color:red"></label>
+                    <div class="row">
+                        <div class="col-4">
+                            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                        </div>
+                    </div>
+                </form>
+                <p class="mb-0" style="margin-top: 6%">
+                    <a href="{% url 'register' %}" class="text-center">Register a new membership</a>
+                </p>
+            </div>
+        <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+var base_url = window.location.origin;
+console.log('111111111111111111111', localStorage.getItem('jwtToken'));
+
+$('#login_form').submit(function () {
+    
+    $.ajax({
+        type: 'POST',
+        url: base_url + '/api/login',
+        data: $(this).serialize(),
+        success: function (response) {
+            console.log(response);
+            if (response.message=="success") {
+                toastr.success("success full login");
+                localStorage.setItem('jwtToken', response.data.access);
+                setTimeout(redirect_to_panel(), 5000);
+            }
+        },
+        error: function(data) {
+            var jsonResponse = JSON.parse(data.responseText);
+            if (Array.isArray(jsonResponse.errors)) {
+                toastr.error(jsonResponse.errors[0]);
+            } else {
+                toastr.error('EROR IN SERVER !');
+                showErrors(jsonResponse.errors)
+            }
+        },
+    });
+    return false;
+});
+
+function showErrors(error_obj) {
+    Object.entries(error_obj).forEach(entry => {
+        const [key, value] = entry;
+        $("#" + key + '_error').html(value[0]);
+        $("#" + key + "_login").addClass('is-invalid');
+    });
+}
+
+function redirect_to_panel() {
+    window.location = '{% url "panel_user_info" %}'
+}
+
+</script>
+
+{% endblock scripts %}

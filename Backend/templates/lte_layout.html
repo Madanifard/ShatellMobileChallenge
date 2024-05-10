@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SHATELL MOBILE</title>
+
+    <link rel="shortcut icon" type="image/png" href="{% static 'lte_panel/img/favicone.png' %}" >
+    <link rel="stylesheet" href='{% static "lte_panel/css/font_sans_pro.css" %}' >
+    <link rel="stylesheet" href='{% static "lte_panel/plugins/fontawesome-free/css/all.min.css" %}' >
+    <link rel="stylesheet" href='{% static "lte_panel/plugins/overlayScrollbars/css/OverlayScrollbars.min.css" %}'>
+    <link rel="stylesheet" href='{% static "lte_panel/css/adminlte.css" %}'>
+    <link rel="stylesheet" href='{% static "lte_panel/plugins/toastr/toastr.min.css" %}'>
+    
+    
+    {% block css %}{% endblock css %}
+
+</head>
+<body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+<div class="wrapper">
+
+    {% include "includes/preloader.html" %}
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-dark">
+    
+    {% include "includes/navbar/useful_links.html" %}
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <!-- Navbar Search -->
+      <li class="nav-item">
+        {% include "includes/navbar/search.html" %}
+      </li>
+
+      <!-- Messages Dropdown Menu -->
+      <li class="nav-item dropdown">
+        {% include "includes/navbar/messages.html" %}
+      </li>
+      <!-- Notifications Dropdown Menu -->
+      <li class="nav-item dropdown">
+        {% include "includes/navbar/notifications.html" %}
+      </li>
+      <li class="nav-item">
+        {% include "includes/navbar/fullscreen.html" %}
+      </li>
+      <li class="nav-item">
+        {% include "includes/navbar/control_sidebar.html" %}
+      </li>
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    
+    {% include "includes/sidebar/logo.html" %}
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+
+        {% include "includes/sidebar/admin.html" %}
+
+        {% include "includes/sidebar/search.html" %}
+
+        {% include "includes/sidebar/menu.html" %}
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+
+    {% block content %}{% endblock content %}
+
+  </div>
+  <!-- /.content-wrapper -->
+
+    {% include "includes/control_sidebar.html" %}
+
+    {% include "includes/footer.html" %}
+</div>
+<!-- ./wrapper -->
+
+<!-- REQUIRED SCRIPTS -->
+<script src='{% static "lte_panel/plugins/jquery/jquery-3.7.1.min.js" %}'></script>
+<script src='{% static "lte_panel/plugins/bootstrap/js/bootstrap.bundle.min.js" %}'></script>
+<script src='{% static "lte_panel/js/adminlte.js" %}'></script>
+<script src='{% static "lte_panel/plugins/toastr/toastr.min.js"%}'></script>
+
+{% block scripts %}{% endblock scripts %}
+
+<script>
+  $(window).on('load', () => {
+    //${window.location.pathname}
+    href = $('#active_link').attr('href')
+    const $sidebarMenuItem = $(`.main-sidebar .nav-item > a.nav-link[href$="${href}"]`);
+    $sidebarMenuItem.each((i, e) => {
+      $(e).addClass('active')
+      $(e).parents('.nav-treeview').prevAll('.nav-link').addClass('active')
+      $(e).parents('.nav-item').addClass('menu-open')
+    });
+  })
+</script>
+
+</body>
+</html>

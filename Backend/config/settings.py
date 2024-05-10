@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # ###########################
     'rest_framework',
     'user',
+    'api',
 ]
 
 
@@ -157,3 +158,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# config Media Root
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
